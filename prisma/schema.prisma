@@ -36,6 +36,11 @@ enum Plan {
   ENTERPRISE
 }
 
+enum AuthType {
+  OAUTH2
+  APIKEY
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -64,6 +69,7 @@ model Organization {
   indexedSources     IndexedSource[]
   extractedSheetRows ExtractedSheetRow[]
   billing            Billing?
+  integrations       Integration[]
 }
 
 model Member {
@@ -201,4 +207,16 @@ model IndexedSource {
   updatedAt              DateTime            @updatedAt
   sheetColumnValues      SheetColumnValue[]
   extractedSheetRows     ExtractedSheetRow[]
+}
+
+model Integration {
+  name                 String
+  organizationId       String
+  organization         Organization @relation(fields: [organizationId], references: [id])
+  authType             AuthType
+  accessToken          String
+  refreshToken         String?
+  accessTokenExpiresAt DateTime?
+
+  @@id([name, organizationId])
 }

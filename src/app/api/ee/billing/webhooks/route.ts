@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { Environment, EventName, Paddle } from "@paddle/paddle-node-sdk"
-import { Plan } from "@prisma/client"
 
 
 export async function POST(request: NextRequest) {

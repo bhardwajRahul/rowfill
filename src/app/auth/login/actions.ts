@@ -66,4 +66,3 @@ export async function verifyOTP(email: string, otp: string) {
 
     return { success: false }
 }
-
