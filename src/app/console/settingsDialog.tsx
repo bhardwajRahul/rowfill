@@ -14,6 +14,7 @@ import BillingComponent from "./ee/billing"
 import { Billing } from "@prisma/client"
 import { getBillingAndCreateIfNotExists } from "./ee/actions"
 import { PiArrowsClockwise, PiClipboard } from "react-icons/pi"
+import Image from "next/image"
 
 type Organization = {
     id: string
@@ -111,6 +112,7 @@ export default function SettingsPage() {
             <Tabs defaultValue="settings" className="w-full">
                 <TabsList className="w-full">
                     <TabsTrigger className="w-full" value="settings">General Settings</TabsTrigger>
+                    <TabsTrigger className="w-full" value="integrations">Integrations</TabsTrigger>
                     {billing && <TabsTrigger className="w-full" value="billing">Billing</TabsTrigger>}
                 </TabsList>
                 <TabsContent value="settings">
@@ -192,6 +194,32 @@ export default function SettingsPage() {
                                         <Button onClick={handleCopyApiKey} size="icon"><PiClipboard /></Button>
                                         <Button onClick={resetApiKey} size="icon"><PiArrowsClockwise /></Button>
                                     </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+                <TabsContent value="integrations">
+                    <div className="space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Integrations</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-col gap-2">
+                                    <Image src="/quickbooks.svg" alt="Quickbooks" width={100} height={100} />
+                                    <Label>Quickbooks</Label>
+                                    <Button>Connect</Button>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <Image src="/xero.svg" alt="Xero" width={100} height={100} />
+                                    <Label>Xero</Label>
+                                    <Button>Connect</Button>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <Image src="/zohobooks.svg" alt="Zoho Books" width={100} height={100} />
+                                    <Label>Zoho Books</Label>
+                                    <Button>Connect</Button>
                                 </div>
                             </CardContent>
                         </Card>

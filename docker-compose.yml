@@ -23,6 +23,16 @@ services:
       - AWS_S3_SECRET_ACCESS_KEY=minioadmin
       - NODE_ENV=production
       - WEAVIATE_LOCAL_URL=weaviate:8080
+      # OAUTH Apps
+      - QUICKBOOKS_CLIENT_ID=
+      - QUICKBOOKS_CLIENT_SECRET=
+      - QUICKBOOKS_REDIRECT_URI=
+      - XERO_CLIENT_ID=
+      - XERO_CLIENT_SECRET=
+      - XERO_REDIRECT_URI=
+      - ZOHO_CLIENT_ID=
+      - ZOHO_CLIENT_SECRET=
+      - ZOHO_REDIRECT_URI=
     depends_on:
       - postgres
       - redis
@@ -56,6 +66,16 @@ services:
       - AWS_S3_SECRET_ACCESS_KEY=minioadmin
       - NODE_ENV=production
       - WEAVIATE_LOCAL_URL=weaviate:8080
+      # OAUTH Apps
+      - QUICKBOOKS_CLIENT_ID=
+      - QUICKBOOKS_CLIENT_SECRET=
+      - QUICKBOOKS_REDIRECT_URI=
+      - XERO_CLIENT_ID=
+      - XERO_CLIENT_SECRET=
+      - XERO_REDIRECT_URI=
+      - ZOHO_CLIENT_ID=
+      - ZOHO_CLIENT_SECRET=
+      - ZOHO_REDIRECT_URI=
     depends_on:
       - postgres
       - redis
@@ -88,6 +108,16 @@ services:
       - AWS_S3_SECRET_ACCESS_KEY=minioadmin
       - NODE_ENV=production
       - WEAVIATE_LOCAL_URL=weaviate:8080
+      # OAUTH Apps
+      - QUICKBOOKS_CLIENT_ID=
+      - QUICKBOOKS_CLIENT_SECRET=
+      - QUICKBOOKS_REDIRECT_URI=
+      - XERO_CLIENT_ID=
+      - XERO_CLIENT_SECRET=
+      - XERO_REDIRECT_URI=
+      - ZOHO_CLIENT_ID=
+      - ZOHO_CLIENT_SECRET=
+      - ZOHO_REDIRECT_URI=
     depends_on:
       - postgres
       - redis

@@ -1,0 +1,44 @@
+tools:
+  - name: quickbooks
+    auth: oauth2
+    auth_info:
+      auth_url: https://app.attio.com/authorize
+      token_url: https://app.attio.com/oauth/token
+      client_id: process.env.QUICKBOOKS_CLIENT_ID
+      client_secret: process.env.QUICKBOOKS_CLIENT_SECRET
+      redirect_uri: process.env.QUICKBOOKS_REDIRECT_URI
+      scopes:
+        - com.intuit.quickbooks.accounting
+        - com.intuit.quickbooks.payment
+
+
+  - name: xero
+    auth: oauth2
+    auth_info:
+      auth_url: https://api.xero.com/oauth/authorize
+      token_url: https://api.xero.com/oauth/token
+      client_id: process.env.XERO_CLIENT_ID
+      client_secret: process.env.XERO_CLIENT_SECRET
+      redirect_uri: process.env.XERO_REDIRECT_URI
+      scopes:
+        - openid
+        - profile
+        - email
+        - accounting.transactions
+        - accounting.contacts
+        - accounting.attachments
+        - files
+        - assets
+        - bankfeeds
+
+
+  - name: zoho
+    auth: oauth2
+    auth_info:
+      auth_url: https://accounts.zoho.com/oauth/v2/auth
+      token_url: https://accounts.zoho.com/oauth/v2/token
+      client_id: process.env.ZOHO_CLIENT_ID
+      client_secret: process.env.ZOHO_CLIENT_SECRET
+      redirect_uri: process.env.ZOHO_REDIRECT_URI
+      scopes:
+        - ZohoBooks.fullaccess.all

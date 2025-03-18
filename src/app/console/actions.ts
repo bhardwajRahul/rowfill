@@ -8,6 +8,8 @@ import { getPresignedUrlForGet, getPresignedUrlForUpload } from "@/lib/file"
 import { queryVectorDB } from "@/core/memory"
 import { generateAnswer } from "@/core/answer"
 import { v4 as uuidv4 } from "uuid"
+import { readYamlFile } from "@/core/yaml"
+import axios from "axios"
 
 export async function fetchSheets() {
     const { organizationId, userId } = await getAuthToken()
@@ -243,4 +245,130 @@ export async function sendMessageToSearch(history: Array<{ role: "user" | "assis
         ]
     }
 
+}
+
+
+export async function completeOAuth(integration: string, code: string) {
+    const { organizationId } = await getAuthToken()
+
+    const toolsFile = readYamlFile("tools.yml")
+    const tool = toolsFile.tools.find((tool: any) => tool.name === integration)
+
+    if (!tool || tool.auth !== "oauth2") {
+        throw new Error("Tool not found or not OAuth-based")
+    }
+
+    const params = new URLSearchParams({
+        client_id: eval(tool["auth_info"]["client_id"]),
+        client_secret: eval(tool["auth_info"]["client_secret"]),
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: eval(tool["auth_info"]["redirect_uri"])
+    })
+
+    const response = await axios.post(tool["auth_info"]["token_url"], params.toString(), {
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    })
+
+    const accessToken = response.data.access_token
+    const refreshToken = response.data.refresh_token || null
+    const expiresIn = response.data.expires_in || null
+
+    const existingTool = await prisma.integration.findFirst({
+        where: {
+            name: integration,
+            organizationId: organizationId
+        }
+    })
+
+    if (existingTool) {
+        await prisma.integration.update({
+            where: {
+                name_organizationId: {
+                    name: integration,
+                    organizationId: organizationId
+                }
+            },
+            data: {
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                accessTokenExpiresAt: expiresIn
+            }
+        })
+    } else {
+        await prisma.integration.create({
+            data: {
+                name: integration,
+                accessToken: accessToken,
+                authType: "OAUTH2",
+                organizationId: organizationId,
+                refreshToken: refreshToken,
+                accessTokenExpiresAt: expiresIn ? new Date(new Date().getTime() + expiresIn * 1000) : null
+            }
+        })
+    }
+
+    return {
+        success: true
+    }
+
+}
+
+
+export async function getOauthUrl(integration: string) {
+    const { organizationId } = await getAuthToken()
+
+    const toolsFile = readYamlFile("tools.yml")
+    const tool = toolsFile.tools.find((tool: any) => tool.name === integration)
+
+    if (!tool || tool.auth !== "oauth2") {
+        throw new Error("Tool not found or not OAuth-based")
+    }
+
+    const params = new URLSearchParams({
+        client_id: eval(tool["auth_info"]["client_id"]),
+        response_type: 'code',
+        scope: tool["auth_info"]["scopes"].join(' '),
+        redirect_uri: eval(tool["auth_info"]["redirect_uri"])
+    })
+
+    const authUrl = `${tool["auth_info"]["auth_url"]}?${params.toString()}`
+    return authUrl
+}
+
+
+export async function saveApiKey(integration: string, apiKey: string) {
+    const { organizationId } = await getAuthToken()
+
+    // TODO: save api key
+    await prisma.integration.create({
+        data: {
+            name: integration,
+            organizationId: organizationId,
+            accessToken: apiKey,
+            authType: "APIKEY"
+        }
+    })
+
+    return {
+        success: true
+    }
+}
+
+export async function revokeIntegration(integration: string) {
+    const { organizationId } = await getAuthToken()
+
+    // TODO: Revoke Integration
+    await prisma.integration.deleteMany({
+        where: {
+            name: integration,
+            organizationId: organizationId
+        }
+    })
+
+    return {
+        success: true
+    }
 }
