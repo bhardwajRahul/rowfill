@@ -12,23 +12,6 @@ enum Role {
   MEMBER
 }
 
-enum ColumnTaskType {
-  GENERATION
-  EXTRACTION
-  CLASSIFICATION
-  OTHERS
-}
-
-enum ColumnDataType {
-  TEXT
-  NUMBER
-  DATE
-  TIME
-  BOOLEAN
-  LIST
-  OBJECT
-}
-
 // ONLY for EE Usage
 enum Plan {
   FREE
@@ -51,25 +34,19 @@ model User {
   updatedAt     DateTime  @updatedAt
   members       Member[]
   sheets        Sheet[]
-  sources       Source[]
 }
 
 model Organization {
-  id                 String              @id @default(cuid())
-  name               String
-  apiKey             String              @unique @default(uuid())
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  members            Member[]
-  sheets             Sheet[]
-  sources            Source[]
-  sheetSources       SheetSource[]
-  sheetColumns       SheetColumn[]
-  sheetColumnValues  SheetColumnValue[]
-  indexedSources     IndexedSource[]
-  extractedSheetRows ExtractedSheetRow[]
-  billing            Billing?
-  integrations       Integration[]
+  id        String   @id @default(cuid())
+  name      String
+  apiKey    String   @unique @default(uuid())
+  mcpTools  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   Member[]
+  sheets    Sheet[]
+  billing   Billing?
+  columns   Column[]
 }
 
 model Member {
@@ -96,127 +73,28 @@ model Billing {
 }
 
 model Sheet {
-  id                 String              @id @default(uuid())
-  name               String
-  createdById        String?
-  createdBy          User?               @relation(fields: [createdById], references: [id])
-  organizationId     String
-  organization       Organization        @relation(fields: [organizationId], references: [id])
-  singleSource       Boolean             @default(false)
-  extractInProgress  Boolean             @default(false)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  sheetSources       SheetSource[]
-  sheetColumns       SheetColumn[]
-  sheetColumnValues  SheetColumnValue[]
-  extractedSheetRows ExtractedSheetRow[]
-}
-
-model Source {
-  id             String          @id @default(uuid())
-  fileName       String
-  fileType       String
-  nickName       String
-  isIndexed      Boolean         @default(false)
-  isIndexing     Boolean         @default(false)
-  indexRunCount  Int             @default(0)
-  organizationId String
-  organization   Organization    @relation(fields: [organizationId], references: [id])
-  uploadedById   String?
-  uploadedBy     User?           @relation(fields: [uploadedById], references: [id])
-  createdAt      DateTime        @default(now())
-  sheets         SheetSource[]
-  indexedSources IndexedSource[]
-}
-
-model SheetSource {
-  id             String             @id @default(uuid())
-  sheetId        String
-  sheet          Sheet              @relation(fields: [sheetId], references: [id])
-  sourceId       String
-  source         Source             @relation(fields: [sourceId], references: [id])
-  organizationId String
-  organization   Organization       @relation(fields: [organizationId], references: [id])
-  rowValues      SheetColumnValue[]
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-}
-
-model SheetColumn {
-  id                String              @id @default(uuid())
-  sheetId           String
-  sheet             Sheet               @relation(fields: [sheetId], references: [id])
-  organizationId    String
-  organization      Organization        @relation(fields: [organizationId], references: [id])
+  id                String       @id @default(uuid())
   name              String
-  instruction       String
-  taskType          ColumnTaskType
-  dataType          ColumnDataType
-  defaultValue      String              @default("N/A")
-  columnValues      SheetColumnValue[]
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  extractedSheetRow ExtractedSheetRow[]
+  createdById       String?
+  createdBy         User?        @relation(fields: [createdById], references: [id])
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id])
+  singleSource      Boolean      @default(false)
+  extractInProgress Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  columns           Column[]
+  cells             Json         @default("{}")  // row_column: value
 }
 
-model SheetColumnValue {
-  sheetId         String
-  sheet           Sheet          @relation(fields: [sheetId], references: [id])
-  sheetColumnId   String
-  sheetColumn     SheetColumn    @relation(fields: [sheetColumnId], references: [id])
-  organizationId  String
-  organization    Organization   @relation(fields: [organizationId], references: [id])
-  value           String?
-  sheetSourceId   String
-  sheetSource     SheetSource    @relation(fields: [sheetSourceId], references: [id])
-  indexedSourceId String?
-  indexedSource   IndexedSource? @relation(fields: [indexedSourceId], references: [id])
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-
-  @@id([sheetColumnId, sheetSourceId])
-}
-
-model ExtractedSheetRow {
-  rowNumber       Int
-  sheetId         String
-  sheet           Sheet          @relation(fields: [sheetId], references: [id])
-  value           String?
-  organizationId  String
-  organization    Organization   @relation(fields: [organizationId], references: [id])
-  sheetColumnId   String
-  sheetColumn     SheetColumn    @relation(fields: [sheetColumnId], references: [id])
-  indexedSourceId String?
-  indexedSource   IndexedSource? @relation(fields: [indexedSourceId], references: [id])
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-
-  @@id([rowNumber, sheetColumnId])
-}
-
-model IndexedSource {
-  id                     String              @id @default(uuid())
-  indexId                String
-  referenceImageFileName String?
-  referenceText          String?
-  sourceId               String
-  source                 Source              @relation(fields: [sourceId], references: [id])
-  organizationId         String
-  organization           Organization        @relation(fields: [organizationId], references: [id])
-  createdAt              DateTime            @default(now())
-  updatedAt              DateTime            @updatedAt
-  sheetColumnValues      SheetColumnValue[]
-  extractedSheetRows     ExtractedSheetRow[]
-}
-
-model Integration {
-  name                 String
-  organizationId       String
-  organization         Organization @relation(fields: [organizationId], references: [id])
-  authType             AuthType
-  accessToken          String
-  refreshToken         String?
-  accessTokenExpiresAt DateTime?
-
-  @@id([name, organizationId])
+model Column {
+  id             String       @id @default(uuid())
+  sheetId        String
+  sheet          Sheet        @relation(fields: [sheetId], references: [id])
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  position       Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }

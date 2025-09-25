@@ -10,9 +10,7 @@ import { Billing, Sheet } from '@prisma/client'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import SettingsPage from './settingsDialog'
-import SourcesDialog from './sourcesDialog'
 import { useSheetStore } from './shared'
-import SearchDialog from './searchDialog'
 import Image from 'next/image'
 import { getBillingAndCreateIfNotExists } from './ee/actions'
 
@@ -64,14 +62,6 @@ export default function ConsoleLayoutContent({ children }: { children: React.Rea
         <div className="flex flex-col gap-2 items-stretch justify-between h-full">
           <div className="flex flex-col gap-2">
             <Image className="mb-2" src="/logo-full.svg" alt="Rowfill Logo" width={120} height={50} />
-            <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full mb-1 flex items-center justify-start gap-2">
-                  <PiMagnifyingGlass /> Search Documents
-                </Button>
-              </DialogTrigger>
-              <SearchDialog open={isSearchOpen} />
-            </Dialog>
             <Button className="w-full mb-1 flex items-center justify-start gap-2" onClick={() => setIsAddProjectOpen(true)}>
               <PiPlusBold /> Add New Sheet
             </Button>
@@ -92,17 +82,6 @@ export default function ConsoleLayoutContent({ children }: { children: React.Rea
           <div className="flex flex-col gap-2">
             <Separator className="my-2" />
             {billing && <p className="text-sm font-bold mb-2">Available Credits: {billing.credits}</p>}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full flex justify-start">
-                  <PiDatabaseBold />
-                  Add Source
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <SourcesDialog />
-              </DialogContent>
-            </Dialog>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full flex justify-start">

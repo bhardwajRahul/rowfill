@@ -1,6 +1,5 @@
 import cron from "node-cron"
 import { prisma } from "@/lib/prisma"
-import { redis } from "@/lib/redis"
 import { logger } from "@/lib/logger"
 import { queue } from "@/lib/queue"
 
