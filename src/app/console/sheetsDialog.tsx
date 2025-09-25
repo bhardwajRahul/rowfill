@@ -23,7 +23,6 @@ const sheetSchema = z.object({
     name: z.string()
         .min(3, "Sheet name must be at least 3 characters")
         .nonempty("Sheet name is required"),
-    singleSource: z.boolean().default(false)
 })
 
 // Infer the type from the schema
@@ -34,7 +33,6 @@ export function AddSheetDialog({ isOpen, onClose }: AddSheetDialogProps) {
     const form = useForm<SheetFormValues>({
         defaultValues: {
             name: '',
-            singleSource: false
         },
         resolver: zodResolver(sheetSchema)
     })
@@ -75,30 +73,6 @@ export function AddSheetDialog({ isOpen, onClose }: AddSheetDialogProps) {
                                         <Input placeholder="Sheet Name" {...field} />
                                     </FormControl>
                                     <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        
-                        <FormField
-                            control={form.control}
-                            name="singleSource"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <FormLabel className="text-base">Table Extraction</FormLabel>
-                                        <div className="text-sm text-muted-foreground">
-                                            Used for extracting tables from a single source.
-                                            <div className="text-xs text-yellow-600">
-                                                Note: This option cannot be changed later
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
                                 </FormItem>
                             )}
                         />

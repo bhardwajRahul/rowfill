@@ -42,3 +42,15 @@ tools:
       redirect_uri: process.env.ZOHO_REDIRECT_URI
       scopes:
         - ZohoBooks.fullaccess.all
+
+
+  - name: sage
+    auth: oauth2
+    auth_info:
+      auth_url: https://api.sageone.com/oauth2/authorize
+      token_url: https://api.sageone.com/oauth2/token
+      client_id: process.env.SAGE_CLIENT_ID
+      client_secret: process.env.SAGE_CLIENT_SECRET
+      redirect_uri: process.env.SAGE_REDIRECT_URI
+      scopes:
+        
